@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    hello music
+    hello music is beging
   </div>
 </template>
 
@@ -10,8 +10,3 @@ export default {
 }
 </script>
 
-<style>
-#app {
-
-}
-</style>
