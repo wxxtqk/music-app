@@ -1,12 +1,16 @@
 <template>
   <div id="app">
-    hello music is beging
+    <my-header></my-header>
   </div>
 </template>
 
 <script>
+import myHeader from 'components/myHeader/my-header'
 export default {
-  name: 'app'
+  name: 'app',
+  components: {
+    myHeader
+  }
 }
 </script>
 
