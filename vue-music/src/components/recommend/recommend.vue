@@ -1,7 +1,7 @@
 <template>
   <div class="recommend">
     <div class="recommend-content">
-      <div class="slider-wrapper">
+      <div class="slider-wrapper" v-if="recommendSlider.length>0">
         <slider>
           <div v-for="item in recommendSlider">
             <a :href="item.linkUrl">
@@ -59,7 +59,7 @@ export default {
   .recommend-content
     height 100%
     overflow hidden
-    .recommend-wrapper
+    .slider-wrapper
       width 100%
       overflow hidden
       position relative
