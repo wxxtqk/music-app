@@ -12,26 +12,39 @@
       </div>
       <div class="recommend-list">
         <h1 class="recommend-title">推荐歌曲列表</h1>
-        <ul></ul>
+        <ul>
+          <li class="item" v-for="item in musicList">
+            <div class="icon">
+              <img :src="item.imgurl" width="60" height="60">
+            </div>
+            <div class="text">
+              <h1 class="name" v-html="item.creator.name"></h1>
+              <p class="desc" v-html="item.dissname"></p>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {recommend} from '@/api/recommend'
+import {recommend, musicList} from '@/api/recommend'
 import { ERR_OK } from '@/api/config'
 import slider from '@/base-components/slider/slider'
 export default {
   data () {
     return {
-      recommendSlider: []
+      recommendSlider: [],
+      musicList: []
     }
   },
   created () {
     this._fetchRecommend()
+    this._fetchMusicList()
   },
   methods: {
+    // 轮播图数据
     _fetchRecommend() {
       recommend().then(res => {
         if (res.code === ERR_OK) {
@@ -40,6 +53,18 @@ export default {
       })
       .catch(error => {
         console('错误', error)
+      })
+    },
+    // 歌单数据
+    _fetchMusicList () {
+      musicList().then(res => {
+        res = res.data
+        if (res.code === ERR_OK) {
+          this.musicList = res.data.list
+        }
+      })
+      .catch(error => {
+        console.log('请求歌单错误', error)
       })
     }
   },
@@ -70,5 +95,28 @@ export default {
         text-align center
         font-size $font-size-medium
         color $color-theme
+      .item
+        display flex
+        box-sizing border-box
+        text-align left 
+        padding 0 20px 20px 20px
+        .icon
+          flex 0 0 60px
+          width 60px
+          padding-right 20px
+        .text
+          display flex
+          flex 1
+          flex-direction column
+          justify-content center
+          line-height 20px
+          overflow hidden
+          font-size $font-size-medium
+          .name
+            margin-bottom 10px
+            color $color-text
+          .desc
+            color $color-text-d
+
 </style>
 

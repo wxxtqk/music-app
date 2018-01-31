@@ -35,11 +35,17 @@ export default {
   },
   mounted () {
     this.update()
+    window.addEventListener('resize', () => {
+      if (!this.slider) {
+        return
+      }
+      this._setWidth(true)
+      this.slider.refresh()
+    })
   },
   methods: {
-    _setWidth() {
+    _setWidth(isResize) {
       this.childrens = this.$refs.sliderList.children
-      this.dots = new Array(this.childrens.length)
       let width = 0
       let wrapWidth = this.$refs.slider.clientWidth
       for (let i = 0; i < this.childrens.length; i++) {
@@ -48,7 +54,8 @@ export default {
         el.style.width = wrapWidth + 'px' // 每个子元素的宽度等于父元素的宽度
         width += wrapWidth
       }
-      if (this.loop) {
+      if (this.loop && !isResize) {
+        this.dots = new Array(this.childrens.length)
         width += 2 * wrapWidth
       }
       this.$refs.sliderList.style.width = width + 'px'
@@ -70,14 +77,20 @@ export default {
       this.slider.on('scrollEnd', () => {
         let pageIndex = this.slider.getCurrentPage().pageX
         this.currentPage = pageIndex
+        if (this.autoPlay) {
+          this._play()
+        }
       })
     },
     init() {
       this._setWidth()
       this._setSlider()
     },
-    _play(){
-      console.log(111)
+    _play() {
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        this.slider.next()
+      }, this.interval)
     },
     update() {
       // 如果better-scroll存在 先解除
@@ -102,23 +115,28 @@ export default {
 
 .slider 
   min-height 1px
+  max-height 150px
   .slider-list 
     position relative
     overflow hidden
     white-space nowrap
+    height 100%
     .slider-item
       float left
       overflow hidden
       text-align center
       box-sizing border-box
+      height 100%
       a
         display block
         width 100%
+        height 100%
         overflow hidden
         text-decoration none 
       img
-      display block
-      width 100%
+        display block
+        width 100%
+        height 100%
   .dots
     position absolute
     right 0

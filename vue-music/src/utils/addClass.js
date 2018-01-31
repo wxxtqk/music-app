@@ -15,6 +15,5 @@ export function addClass(el, className) {
  */
 export function hasClass(el, className) {
   let reg = new RegExp('(^|\\s)' + className + '($|\\s)')
-  console.log(el.className)
   return reg.test(el.className)
 }
