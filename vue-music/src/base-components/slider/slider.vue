@@ -115,7 +115,6 @@ export default {
 
 .slider 
   min-height 1px
-  max-height 150px
   .slider-list 
     position relative
     overflow hidden

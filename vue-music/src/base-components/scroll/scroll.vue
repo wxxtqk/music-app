@@ -1,0 +1,55 @@
+<template>
+  <div ref="wrapperScroll">
+    <slot></slot>
+  </div>
+</template>
+
+<script>
+import BScroll from 'better-scroll'
+export default {
+  props: {
+    click: {
+      type: Boolean,
+      default: true
+    },
+    probeType: {
+      type: Number,
+      default: 1
+    },
+    data: {
+      type: Array,
+      default: null
+    }
+  },
+  methods: {
+    initScroll() {
+      if (!this.$refs.wrapperScroll) {
+        return
+      }
+      this.scroll = new BScroll(this.$refs.wrapperScroll, {
+        click: this.click,
+        probeType: this.probeType
+      })
+    },
+    // 重新计算滚动
+    refresh() {
+      this.scroll && this.scroll.refresh()
+    },
+    update() {
+      this.$nextTick(() => {
+        this.initScroll()
+      })
+    }
+  },
+  mounted () {
+    this.update()
+  },
+  // 当data发生改变后重新计算高度
+  watch: {
+    data() {
+      this.refresh()
+    }
+  }
+}
+</script>
+

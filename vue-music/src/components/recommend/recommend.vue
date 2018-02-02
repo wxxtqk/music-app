@@ -1,30 +1,35 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div class="slider-wrapper" v-if="recommendSlider.length>0">
-        <slider>
-          <div v-for="item in recommendSlider">
-            <a :href="item.linkUrl">
-              <img :src="item.picUrl" />
-            </a>
-          </div>
-        </slider>
-      </div>
-      <div class="recommend-list">
-        <h1 class="recommend-title">推荐歌曲列表</h1>
-        <ul>
-          <li class="item" v-for="item in musicList">
-            <div class="icon">
-              <img :src="item.imgurl" width="60" height="60">
+    <scroll class="recommend-content" :data="musicList" ref="scroll">
+      <div>
+        <div class="slider-wrapper" v-if="recommendSlider.length>0">
+          <slider>
+            <div v-for="item in recommendSlider">
+              <a :href="item.linkUrl">
+                <img @load="loadImage" :src="item.picUrl" />
+              </a>
             </div>
-            <div class="text">
-              <h1 class="name" v-html="item.creator.name"></h1>
-              <p class="desc" v-html="item.dissname"></p>
-            </div>
-          </li>
-        </ul>
+          </slider>
+        </div>
+        <div class="recommend-list">
+          <h1 class="recommend-title">推荐歌曲列表</h1>
+          <ul>
+            <li class="item" v-for="item in musicList">
+              <div class="icon">
+                <img v-lazy="item.imgurl" width="60" height="60">
+              </div>
+              <div class="text">
+                <h1 class="name" v-html="item.creator.name"></h1>
+                <p class="desc" v-html="item.dissname"></p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+      <div class="loading-content" v-show="!musicList.length">
+        <loading></loading>
+      </div>
+    </scroll>
   </div>
 </template>
 
@@ -32,6 +37,8 @@
 import {recommend, musicList} from '@/api/recommend'
 import { ERR_OK } from '@/api/config'
 import slider from '@/base-components/slider/slider'
+import scroll from '@/base-components/scroll/scroll'
+import loading from '@/base-components/loading/loading'
 export default {
   data () {
     return {
@@ -66,10 +73,16 @@ export default {
       .catch(error => {
         console.log('请求歌单错误', error)
       })
+    },
+    loadImage() {
+      if (!this.checkImg) {
+        this.$refs.scroll.refresh()
+        this.checkImg = true
+      }
     }
   },
   components: {
-    slider
+    slider, scroll, loading
   }
 }
 </script>
