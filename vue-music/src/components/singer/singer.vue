@@ -1,3 +1,79 @@
 <template>
   <div>这是歌手页面</div>
 </template>
+<script>
+import {fetchSingerList} from '@/api/singer'
+import {ERR_OK} from '@/api/config'
+import SingerList from '@/utils/singerList'
+const HOT_NAME = '热门'
+const HOT_LEN = 10
+export default {
+  data () {
+    return {
+      singerList: []
+    }
+  },
+  methods: {
+    _fetchSingerList() {
+      fetchSingerList().then(res => {
+        if (res.code === ERR_OK) {
+          this.singerList = res.data.list
+          console.log(this._normalSingleList(this.singerList))
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    _normalSingleList(list) {
+      let map = {
+        hot: {
+          title: HOT_NAME,
+          item: []
+        }
+      }
+      list.forEach((item, index) => {
+        // 添加热门歌手
+        if (index < HOT_LEN) {
+          map.hot.item.push(new SingerList({
+            id: item.Fsinger_mid,
+            name: item.Fsinger_name
+          }))
+        }
+        // 封装a-zA-Z的字母的歌手
+        const key = item.Findex
+        if (!map[key]) {
+          map[key] = {
+            title: key,
+            item: []
+          }
+        }
+        map[key].item.push(new SingerList({
+          id: item.Fsinger_mid,
+          name: item.Fsinger_name
+        }))
+      })
+      // 处理map，按照a-zA-z的顺序排序
+      let hot = []
+      let remain = []
+      for (const key in map) {
+        if (map.hasOwnProperty(key)) {
+          const element = map[key]
+          if (element.title.match(/[a-zA-Z]/)) {
+            remain.push(element)
+          } else if (element.title === HOT_NAME){
+            hot.push(element)
+          }
+        }
+      }
+      // 处理排序 按照A-Z进行排序
+      remain.sort((a, b) => {
+        return a.title.charCodeAt(0) - b.title.charCodeAt(0)
+      })
+      return hot.concat(remain)
+    }
+  },
+  created () {
+    this._fetchSingerList()
+  }
+}
+</script>
