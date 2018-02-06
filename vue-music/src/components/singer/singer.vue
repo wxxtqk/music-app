@@ -1,10 +1,13 @@
 <template>
-  <div>这是歌手页面</div>
+  <div class="singer-content">
+    <list-view :data="singerList"></list-view>
+  </div>
 </template>
 <script>
 import {fetchSingerList} from '@/api/singer'
 import {ERR_OK} from '@/api/config'
 import SingerList from '@/utils/singerList'
+import listView from '@/base-components/listView/listView'
 const HOT_NAME = '热门'
 const HOT_LEN = 10
 export default {
@@ -13,12 +16,14 @@ export default {
       singerList: []
     }
   },
+  components: {
+    listView
+  },
   methods: {
     _fetchSingerList() {
       fetchSingerList().then(res => {
         if (res.code === ERR_OK) {
-          this.singerList = res.data.list
-          console.log(this._normalSingleList(this.singerList))
+          this.singerList = this._normalSingleList(res.data.list)
         }
       }).catch(error => {
         console.log(error)
@@ -60,7 +65,7 @@ export default {
           const element = map[key]
           if (element.title.match(/[a-zA-Z]/)) {
             remain.push(element)
-          } else if (element.title === HOT_NAME){
+          } else if (element.title === HOT_NAME) {
             hot.push(element)
           }
         }
@@ -77,3 +82,9 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~common/stylus/variable.styl'
+.singer-content
+  content ()
+</style>

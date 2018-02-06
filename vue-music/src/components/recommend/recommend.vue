@@ -130,6 +130,7 @@ export default {
             color $color-text
           .desc
             color $color-text-d
-
+    .loading-content
+      loading-content()
 </style>
 

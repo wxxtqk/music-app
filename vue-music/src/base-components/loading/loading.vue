@@ -17,7 +17,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import '~common/stylus/variable.styl';
+@import '~common/stylus/variable.styl'
 .loading
   width 100%
   text-align center
