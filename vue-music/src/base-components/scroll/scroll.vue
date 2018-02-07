@@ -39,6 +39,10 @@ export default {
       this.$nextTick(() => {
         this.initScroll()
       })
+    },
+    // 移动到具体某个元素
+    scrollToElement() {
+      this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     }
   },
   mounted () {

@@ -1,7 +1,7 @@
 <template>
-  <scroll class="list-view" :data="data">
+  <scroll class="list-view" :data="data" ref="singerScroll">
     <ul>
-      <li v-for="group in data" class="list-group">
+      <li v-for="group in data" class="list-group" ref="groupItem">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
           <li v-for="item in group.item" class="list-item">
@@ -11,9 +11,9 @@
         </ul>
       </li>
     </ul>
-    <div class="abbreviate" v-show="data.length">
+    <div class="abbreviate" v-show="data.length" @touchstart="onAbbreviateTouchStart" @touchmove.stop.prevent="onAbbreviateTouchMove">
       <ul>
-        <li class="abbreviate-list" v-for="item in abbreviate">{{item}}</li>
+        <li class="abbreviate-list" v-for="(item, index) in abbreviate" :data-index="index">{{item}}</li>
       </ul>
     </div>
     <div v-show="!data.length" class="loading-content">
@@ -25,6 +25,8 @@
 <script>
 import scroll from '@/base-components/scroll/scroll'
 import loading from '@/base-components/loading/loading'
+import { attr } from 'utils/dom'
+const ABB_HEIGHT = 18 // 每个缩略字母的高度
 export default {
   props: {
     data: {
@@ -41,6 +43,27 @@ export default {
         return item.title.substr(0, 1)
       })
     }
+  },
+  methods: {
+    onAbbreviateTouchStart(e) {
+      let AbbreviateIndex = attr(e.target, 'index')
+      this.firstStart = parseInt(AbbreviateIndex) // 记录手指按下的位置
+      this.client.start = e.touches[0].pageY // 记录第一根手指的位置
+      this._scrollTo(AbbreviateIndex)
+    },
+    onAbbreviateTouchMove(e) {
+      this.client.end = e.touches[0].pageY // 记录移动了多远
+      let dist = (this.client.end - this.client.start) / ABB_HEIGHT | 0 // 计算移动了几个缩略字
+      let diff = this.firstStart + dist
+      this._scrollTo(diff)
+    },
+    _scrollTo(index) {
+      this.$refs.singerScroll.scrollToElement(this.$refs.groupItem[index], 0)
+    }
+  },
+  created () {
+    // 记录滚动的位置
+    this.client = {}
   }
 }
 </script>
