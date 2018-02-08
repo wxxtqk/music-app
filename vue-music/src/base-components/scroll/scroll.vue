@@ -19,6 +19,11 @@ export default {
     data: {
       type: Array,
       default: null
+    },
+    // 监听滚动
+    listenScroll: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -30,6 +35,12 @@ export default {
         click: this.click,
         probeType: this.probeType
       })
+      // 监听滚动事件
+      if (this.listenScroll) {
+        this.scroll.on('scroll', pos => {
+          this.$emit('scroll', pos)
+        })
+      }
     },
     // 重新计算滚动
     refresh() {
