@@ -21,6 +21,9 @@
         <li class="abbreviate-list" v-for="(item, index) in abbreviate" :data-index="index" :class="{'currentPage': index === currentIndex}">{{item}}</li>
       </ul>
     </div>
+    <div class="list-fixed" v-show="fixedTitle" ref="fixed">
+      <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
     <div v-show="!data.length" class="loading-content">
       <loading></loading>
     </div>
@@ -32,6 +35,7 @@ import scroll from '@/base-components/scroll/scroll'
 import loading from '@/base-components/loading/loading'
 import { attr } from 'utils/dom'
 const ABB_HEIGHT = 18 // 每个缩略字母的高度
+const TITLE_HEIGHT = 30 // 每个title的高度
 export default {
   props: {
     data: {
@@ -44,7 +48,8 @@ export default {
       probeType: 3,
       listenScroll: true,
       scrollY: -1,
-      currentIndex: 0
+      currentIndex: 0,
+      diff: -1
     }
   },
   components: {
@@ -55,6 +60,12 @@ export default {
       return this.data.map((item) => {
         return item.title.substr(0, 1)
       })
+    },
+    fixedTitle() {
+      if (this.scrollY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
   },
   methods: {
@@ -76,6 +87,7 @@ export default {
         return
       }
       this.currentIndex = index
+      // scrollToElement第二个参数是0表示瞬间移动，没有动画效果
       this.$refs.singerScroll.scrollToElement(this.$refs.groupItem[index], 0)
     },
     scroll(pos) {
@@ -106,11 +118,27 @@ export default {
         let height1 = containerHeight[i]
         let height2 = containerHeight[i + 1]
         if (!height2 || ((height1 < dist) && (dist < height2))) {
+          // 当往上面滑，超过了，滑到第一个过后
+          if (dist <= 0) {
+            this.currentIndex = 0
+            return
+          }
+          this.diff = height2 - dist
           this.currentIndex = i
           return
         }
       }
-      this.currentIndex = 0
+    },
+    diff(val) {
+      // 计算固定栏偏移量
+      let fixedTop = (val < TITLE_HEIGHT && val > 0) ? val - TITLE_HEIGHT : 0
+      // 减少dom的操作
+      if (this.fixedTop === fixedTop) {
+        return
+      }
+      this.fixedTop = fixedTop
+      // 使用transform的translate3d开启gpu加速模式
+      this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`
     },
     // 数据来了后 就计算高度
     data() {
@@ -176,6 +204,18 @@ export default {
       line-height 1
       &.currentPage
         color $color-theme
+  .list-fixed
+    position absolute
+    left 0
+    top 0
+    width 100%
+    .fixed-title
+      height 30px
+      line-height 30px
+      padding-left 20px
+      font-size $font-size-small
+      color $color-text-l
+      background $color-highlight-background
   .loading-content
     loading-content()
 </style>
