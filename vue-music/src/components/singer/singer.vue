@@ -1,6 +1,7 @@
 <template>
   <div class="singer-content">
-    <list-view :data="singerList"></list-view>
+    <list-view :data="singerList" @selectSinger="selectSinger"></list-view>
+    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -20,6 +21,10 @@ export default {
     listView
   },
   methods: {
+    // 子级传递歌手详情
+    selectSinger(item) {
+      this.$router.push(`/singer/${item.id}`)
+    },
     _fetchSingerList() {
       fetchSingerList().then(res => {
         if (res.code === ERR_OK) {

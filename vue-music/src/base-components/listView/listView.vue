@@ -6,16 +6,18 @@
     @scroll="scroll"
     :listenScroll="listenScroll">
     <ul>
+      <!-- 歌手列表 -->
       <li v-for="group in data" class="list-group" ref="groupItem">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li v-for="item in group.item" class="list-item">
+          <li v-for="item in group.item" class="list-item" @click="selectSinger(item)">
             <img v-lazy="item.avatar" class="avatar">
             <p class="name">{{item.name}}</p>
           </li>
         </ul>
       </li>
     </ul>
+    <!-- 旁边的字母排序 -->
     <div class="abbreviate" v-show="data.length" @touchstart="onAbbreviateTouchStart" @touchmove.stop.prevent="onAbbreviateTouchMove">
       <ul>
         <li class="abbreviate-list" v-for="(item, index) in abbreviate" :data-index="index" :class="{'currentPage': index === currentIndex}">{{item}}</li>
@@ -24,6 +26,7 @@
     <div class="list-fixed" v-show="fixedTitle" ref="fixed">
       <div class="fixed-title">{{fixedTitle}}</div>
     </div>
+    <!-- 显示导航栏 -->
     <div v-show="!data.length" class="loading-content">
       <loading></loading>
     </div>
@@ -57,11 +60,13 @@ export default {
   },
   computed: {
     abbreviate() {
+      // 显示第一个字符，比如 [热门] => [热]
       return this.data.map((item) => {
         return item.title.substr(0, 1)
       })
     },
     fixedTitle() {
+      // 滚动到头部不显示
       if (this.scrollY > 0) {
         return ''
       }
@@ -69,17 +74,20 @@ export default {
     }
   },
   methods: {
+    selectSinger(item) {
+      this.$emit('selectSinger', item)
+    },
     onAbbreviateTouchStart(e) {
       let AbbreviateIndex = attr(e.target, 'index')
       this.firstStart = parseInt(AbbreviateIndex) // 记录手指按下的位置
       this.client.start = e.touches[0].pageY // 记录第一根手指的位置
-      this._scrollTo(this.firstStart)
+      this._scrollTo(this.firstStart) // 歌手列表滑动到手指按下序列
     },
     onAbbreviateTouchMove(e) {
       this.client.end = e.touches[0].pageY // 记录移动了多远
       let dist = (this.client.end - this.client.start) / ABB_HEIGHT | 0 // 计算移动了几个缩略字
       let diff = this.firstStart + dist
-      this._scrollTo(diff)
+      this._scrollTo(diff) // 歌手列表滑动到手指抬起的位置
     },
     _scrollTo(index) {
       // 防止移动过头了
@@ -102,6 +110,7 @@ export default {
       this.containerHeight = []
       let height = 0
       this.containerHeight.push(height)
+      // 计算每一个group离顶部的距离
       for (let i = 0; i < lists.length; i++) {
         const elHeight = lists[i].clientHeight
         height += elHeight
@@ -123,7 +132,7 @@ export default {
             this.currentIndex = 0
             return
           }
-          this.diff = height2 - dist
+          this.diff = height2 - dist // 计算grounp中即将到达的元素与父元素的一个差值，以便及时更新固定栏的值
           this.currentIndex = i
           return
         }
