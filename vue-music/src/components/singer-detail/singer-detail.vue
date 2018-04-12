@@ -1,6 +1,6 @@
 <template>
   <transition name="detail">
-    <div class="singer-detail"></div>
+    <music-list></music-list>
   </transition>
 </template>
 
@@ -9,11 +9,15 @@ import { mapGetters } from 'vuex'
 import { fetchSingerDetail } from '@/api/singer'
 import {ERR_OK} from '@/api/config'
 import {createSong} from '@/utils/song'
+import musicList from '@/base-components/music-list/music-list'
 export default {
   computed: {
     ...mapGetters([
       'singer'
     ])
+  },
+  components: {
+    musicList
   },
   methods: {
     // 获取歌手的歌曲列表
@@ -47,14 +51,6 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~common/stylus/variable.styl'
-.singer-detail
-  position fixed
-  left 0
-  top 0
-  right 0
-  bottom 0
-  z-index 100
-  background-color $color-background
 .detail-enter-active, .detail-leave-active
   transition all .3s
 .detail-enter, .detail-leave-to
