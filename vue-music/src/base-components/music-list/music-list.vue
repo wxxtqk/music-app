@@ -5,20 +5,58 @@
       <i class="icon icon-back"></i>
     </div>
     <!-- 标题 -->
-    <h1 class="title">周杰伦</h1>
+    <h1 class="title" v-html="title"></h1>
     <!-- 歌手的头像  -->
-    <div class="avatar-image"></div>
-    <div class="songs"></div>
+    <div class="avatar-image" v-bind:style="bgStyle" ref="avatar">
+      <div class="filter"></div>
+    </div>
+    <scroll :data="songs" class="list" ref="list">
+      <div class="song-list-wrapper">
+        <song-list :songs="songs"></song-list>
+      </div>
+    </scroll>
   </div>
 </template>
 
 <script>
+import scroll from '@/base-components/scroll/scroll'
+import songList from '@/base-components/song-list/song-list'
 export default {
+  props: {
+    avatar: {
+      type: String,
+      default: ''
+    },
+    title: {
+      type: String,
+      default: ''
+    },
+    songs: {
+      type: Array,
+      default: function () {
+        return []
+      }
+    }
+  },
+  computed: {
+    bgStyle() {
+      return `background-image: url(${this.avatar})`
+    }
+  },
+  mounted () {
+    // 获取用户头像的高度
+    this.avatarHeight = this.$refs.avatar.clientHeight
+    // 设置滚动区域父级的top值
+    this.$refs.list.$el.style.top = `${this.avatarHeight}px`
+  },
   methods: {
     // 返回到歌手列表
     back() {
       this.$router.push('/singer')
     }
+  },
+  components: {
+    scroll, songList
   }
 }
 </script>
@@ -49,4 +87,34 @@ export default {
       height 42px
       line-height 42px
       text-align center
+      position absolute
+      left 10%
+      top 0
+      width 80%
+      font-size: $font-size-large
+      color: $color-text
+      text-align center
+    .avatar-image
+      position relative
+      width 100%
+      height 0
+      padding-top 70%
+      transform-origin top
+      background-size cover
+      .filter
+        position absolute
+        left 0
+        top 0
+        width 100%
+        height 100%
+        background-color rgba(7, 17, 27, 0.4)
+    .list
+      position fixed
+      width 100%
+      bottom 0
+      top 0
+      background: $color-background
+      overflow hidden
+      .song-list-wrapper
+        padding 20px 30px
 </style>

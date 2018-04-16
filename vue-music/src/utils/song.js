@@ -1,6 +1,7 @@
 export default class Song {
   constructor({id, mid, singer, name, album, duration, image, url}) {
     this.id = id // 歌曲的id
+    this.singer = singer // 歌手名字
     this.mid = mid // 歌曲的mid,用来以后拼接图片路径跟音乐路径
     this.name = name // 歌曲的名称
     this.album = album // 歌曲的专辑
@@ -14,7 +15,7 @@ export function createSong(musicData) {
   return new Song({
     id: musicData.songid,
     mid: musicData.songmid,
-    singer: filterSinger(matchMedia.singer),
+    singer: filterSinger(musicData.singer),
     name: musicData.songname,
     album: musicData.albumname,
     duration: musicData.interval,

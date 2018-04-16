@@ -1,6 +1,6 @@
 <template>
   <transition name="detail">
-    <music-list></music-list>
+    <music-list :title="title" :avatar="avatar" :songs="songs"></music-list>
   </transition>
 </template>
 
@@ -12,12 +12,25 @@ import {createSong} from '@/utils/song'
 import musicList from '@/base-components/music-list/music-list'
 export default {
   computed: {
+    // 用户名字
+    title() {
+      return this.singer.name
+    },
+    // 用户的头像
+    avatar() {
+      return this.singer.avatar
+    },
     ...mapGetters([
       'singer'
     ])
   },
   components: {
     musicList
+  },
+  data () {
+    return {
+      songs: []
+    }
   },
   methods: {
     // 获取歌手的歌曲列表
@@ -27,14 +40,15 @@ export default {
         this.$router.push('/singer')
         return
       }
+      // 根据歌手的id获取歌曲
       fetchSingerDetail(id).then(res => {
         if (res.code === ERR_OK) {
           let ret = []
           res.data.list.forEach(item => {
-            let {musicData} = item
-            ret.push(createSong(musicData))
+            let {musicData} = item // es6的解构
+            ret.push(createSong(musicData)) // 对获取的数据进行二次封装，方便以后用得重用，降低其耦合性
           })
-          console.log(ret)
+          this.songs = ret
         }
       })
       .catch(error => {
