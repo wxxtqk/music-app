@@ -12,6 +12,7 @@ export default {
       type: Boolean,
       default: true
     },
+    // 需要滚动的位置
     probeType: {
       type: Number,
       default: 1
@@ -31,6 +32,7 @@ export default {
       if (!this.$refs.wrapperScroll) {
         return
       }
+      // 初始化滚动
       this.scroll = new BScroll(this.$refs.wrapperScroll, {
         click: this.click,
         probeType: this.probeType
