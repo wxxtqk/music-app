@@ -9,7 +9,7 @@
     <!-- 歌手的头像  -->
     <div class="avatar-image" v-bind:style="bgStyle" ref="avatar">
       <!-- 播放按钮 -->
-      <div class="play-wrapper">
+      <div class="play-wrapper" ref="play">
         <div class="play-btn">
           <i class="icon-play"></i>
           <span class="play-text">播放全部</span>
@@ -25,6 +25,10 @@
         <song-list class="song-list-wrapper" :songs="songs"></song-list>
       </div>
     </scroll>
+    <!-- 显示加载中 -->
+    <div v-show="!songs.length" class="loading-content">
+      <loading></loading>
+    </div>
   </div>
 </template>
 
@@ -32,6 +36,7 @@
 import scroll from '@/base-components/scroll/scroll'
 import songList from '@/base-components/song-list/song-list'
 import prefixStyle from '@/utils/prefixStyle'
+import loading from '@/base-components/loading/loading'
 const OFFSET = 42 // 设置偏移量，防止滚动到头部把back按钮挡住了
 // 根据不同浏览器转换成不同的前缀
 const transform = prefixStyle('transform')
@@ -107,7 +112,9 @@ export default {
       if (newVal < this.mixScrollY) {
         zIndex = 10 // 设置z-index让图片盖住文字
         this.$refs.avatar.style.paddingTop = `${OFFSET}px`
+        this.$refs.play.style.display = 'none'
       } else {
+        this.$refs.play.style.display = 'block'
         this.$refs.avatar.style.paddingTop = `70%`
       }
       this.$refs.avatar.style.zIndex = zIndex
@@ -117,7 +124,7 @@ export default {
     }
   },
   components: {
-    scroll, songList
+    scroll, songList, loading
   }
 }
 </script>
@@ -205,4 +212,6 @@ export default {
       position relative
       height 100%
       background $color-background
+    .loading-content
+      loading-content()
 </style>
