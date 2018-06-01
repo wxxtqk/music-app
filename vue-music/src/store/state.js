@@ -5,6 +5,7 @@ const state = {
   fullScreen: false, // 是否最小化
   playList: [], // 播放列表
   sequenceList: [], // 播放顺序
-  mode: playMode.sequence // 默认循序播放
+  mode: playMode.sequence, // 默认循序播放
+  currentIndex: -1 // 当前播放歌曲一个索引
 }
 export default state
