@@ -26,7 +26,7 @@
           </ul>
         </div>
       </div>
-      <div class="loading-content" v-show="!musicList.length">
+      <div class="loading-content" v-show="!musicList.length || loading">
         <loading></loading>
       </div>
     </scroll>
@@ -43,7 +43,8 @@ export default {
   data () {
     return {
       recommendSlider: [],
-      musicList: []
+      musicList: [],
+      loading: true
     }
   },
   created () {
@@ -64,13 +65,16 @@ export default {
     },
     // 歌单数据
     _fetchMusicList () {
+      this.loading = true
       musicList().then(res => {
+        this.loading = false
         res = res.data
         if (res.code === ERR_OK) {
           this.musicList = res.data.list
         }
       })
       .catch(error => {
+        this.loading = false
         console.log('请求歌单错误', error)
       })
     },
