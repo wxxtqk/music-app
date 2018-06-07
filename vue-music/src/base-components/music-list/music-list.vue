@@ -22,7 +22,7 @@
     <div class="layer" ref="layer"></div>
     <scroll :data="songs" class="list" ref="list" :probe-type="probeType" :listen-scroll="listenScroll" @scroll="scroll">
       <div>
-        <song-list class="song-list-wrapper" :songs="songs"></song-list>
+        <song-list class="song-list-wrapper" :songs="songs" @select="selectItem"></song-list>
       </div>
     </scroll>
     <!-- 显示加载中 -->
@@ -37,6 +37,7 @@ import scroll from '@/base-components/scroll/scroll'
 import songList from '@/base-components/song-list/song-list'
 import prefixStyle from '@/utils/prefixStyle'
 import loading from '@/base-components/loading/loading'
+import { mapActions } from 'vuex'
 const OFFSET = 42 // 设置偏移量，防止滚动到头部把back按钮挡住了
 // 根据不同浏览器转换成不同的前缀
 const transform = prefixStyle('transform')
@@ -86,7 +87,17 @@ export default {
     scroll(pos) {
       // 获取滚动的y轴的距离
       this.scrollY = pos.y
-    }
+    },
+    // 选中歌曲
+    selectItem(item, index) {
+      this.setPlayer({
+        list: this.songs, // 播放歌曲列表
+        index
+      })
+    },
+    ...mapActions([
+      'setPlayer'
+    ])
   },
   watch: {
     scrollY(newVal) {
@@ -110,7 +121,7 @@ export default {
       this.$refs.filter.style[filter] = `blur(${blur}px)`
       // 当滚动的内容还没有到达头部的时候
       if (newVal < this.mixScrollY) {
-        zIndex = 10 // 设置z-index让图片盖住文字
+        zIndex = 10 // 设置z-index让图片盖住滚动的文字
         this.$refs.avatar.style.paddingTop = `${OFFSET}px`
         this.$refs.play.style.display = 'none'
       } else {

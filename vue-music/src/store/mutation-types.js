@@ -1,5 +1,5 @@
 export const SET_SINGER = 'SET_SINGER'
-
+// 控制播放与暂停
 export const SET_PLAYING = 'SET_PLAYING'
 // 设置是否全屏
 export const SET_FULLSCREEN = 'SET_FULLSCREEN'

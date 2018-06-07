@@ -1,9 +1,9 @@
 <template>
   <div class="song-list">
     <ul>
-      <li class="item" v-for="song in songs">
+      <li class="item" v-for="(song, index) in songs" @click="select(song, index)">
         <div class="content">
-          <h2 class="name">{{song.name}}</h2>
+          <h2 class="name" :class="{active: song.id === currentSong.id}">{{song.name}}</h2>
           <p class="desc">{{song | setDesc}}</p>
         </div>
       </li>
@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   props: {
     songs: {
@@ -25,6 +26,18 @@ export default {
     setDesc (song) {
       return `${song.singer}.${song.album}`
     }
+  },
+  methods: {
+    select(item, index) {
+      // 向上派发一个选中的歌曲以及一个索引
+      // 这是基本组件的一个开发模式
+      this.$emit('select', item, index)
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'currentSong'
+    ])
   }
 }
 </script>
@@ -46,6 +59,8 @@ export default {
         .name
           no-wrap()
           color: $color-text
+          &.active
+            color $color-theme
         .desc
           no-wrap()
           margin-top: 4px
