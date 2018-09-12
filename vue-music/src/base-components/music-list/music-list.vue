@@ -19,6 +19,7 @@
       <div class="filter" ref="filter"></div>
     </div>
     <!-- 滚动层 -->
+    <!-- layer就相当于遮罩层 -->
     <div class="layer" ref="layer"></div>
     <scroll :data="songs" class="list" ref="list" :probe-type="probeType" :listen-scroll="listenScroll" @scroll="scroll">
       <div>

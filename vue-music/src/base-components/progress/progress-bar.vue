@@ -5,8 +5,12 @@
     <div class="bar-inner" ref="barInner">
       <!-- 进度条 走过的位置-->
       <div class="progress" ref="progress"></div>
-      <!-- 进度条按钮 -->
-      <div class="progress-bar-btn" ref="progressBtn">
+      <!-- 进度条按钮 小球-->
+      <div class="progress-bar-btn" ref="progressBtn" 
+        @touchstart.prevent="progressTouchStart"
+        @touchmove.prevent="progressTouchMove"
+        @touchend="progressTouchEnd"
+        >
         <div class="btn"></div>
       </div>
     </div>
@@ -29,6 +33,17 @@ export default {
       let offset = width * newPercent
       this.$refs.progress.style.width = `${offset}px` // s设置进度条
       this.$refs.progressBtn.style[prefixStyle('transform')] = `translate3d(${offset}px, 0, 0)` // 设置按钮
+    }
+  },
+  methods: {
+    progressTouchStart(e) {
+      console.log('点击')
+    },
+    progressTouchMove(e) {
+      console.log('移动')
+    },
+    progressTouchEnd(e) {
+      console.log('当手指取消的时候')
     }
   }
 }

@@ -1,7 +1,10 @@
 'use strict'
+// 控制台输出颜色
 const chalk = require('chalk')
+// 是用来对特定的版本号做判断的
 const semver = require('semver')
 const packageConfig = require('../package.json')
+// 用于执行unix命令
 const shell = require('shelljs')
 
 function exec (cmd) {
@@ -10,12 +13,12 @@ function exec (cmd) {
 
 const versionRequirements = [
   {
-    name: 'node',
-    currentVersion: semver.clean(process.version),
-    versionRequirement: packageConfig.engines.node
+    name: 'node', // node模块名称
+    currentVersion: semver.clean(process.version), // 把node版本信息格式化 如=v1.2.3 -> 1.2.3, 当前的node版本号
+    versionRequirement: packageConfig.engines.node // 希望的node版号
   }
 ]
-
+// 检查是否有npm，如果有就返回C:\PROGRAM FILES\NODEJS\NPM.CMD 返回绝对路径, 否则返回null
 if (shell.which('npm')) {
   versionRequirements.push({
     name: 'npm',
