@@ -44,7 +44,7 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{currentTime | pod}}</span>
             <div class="progress">
-              <progress-bar :percent="percent"></progress-bar>
+              <progress-bar :percent="percent" @progressPercent="onPercentChange"></progress-bar>
             </div>
             <span class="time time-r">{{currentSong.duration | pod}}</span>
           </div>
@@ -86,9 +86,11 @@
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
-        <!-- 进度条 -->
+        <!-- 点击暂停以及播放还有进度条 -->
         <div class="control">
-          <i :class="miniPlayerIcon" @click.stop="togglePlaying"></i>
+          <progress-circle :radius="radius" :percent="percent">
+            <i :class="miniPlayerIcon" class="mini-circle" @click.stop="togglePlaying" ></i>
+          </progress-circle>
         </div>
         <!-- 点击打开歌曲列表icon -->
         <div class="control">
@@ -105,14 +107,16 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 import prefixStyle from '@/utils/prefixStyle'
 import progressBar from '@/base-components/progress/progress-bar'
+import progressCircle from '@/base-components/progress/progress-circle'
 export default {
   components: {
-    progressBar
+    progressBar, progressCircle
   },
   data () {
     return {
       currentTime: 0, // 歌曲的播放时间
-      songState: false // 标识符控制歌曲是否加载完成
+      songState: false, // 标识符控制歌曲是否加载完成
+      radius: 32 // 圆的大小
     }
   },
   methods: {
@@ -164,7 +168,15 @@ export default {
     togglePlaying() {
       this.setPlaying(!this.playing)
     },
+    // 设置歌曲的currentTime
+    onPercentChange(percent) {
+      this.$refs.audio.currentTime = this.currentSong.duration * percent
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+    },
     // vue的动画js钩子函数
+    // 用于头像从左下角移动到正中间
     enter(el, done) {
       let {x, y, scale} = this._getPosAndScale()
       // 设置动画
@@ -208,14 +220,14 @@ export default {
     },
     // 获取mini播放器图片的位置，方便
     _getPosAndScale() {
-      const paddingLeft = 40
-      const paddingBottom = 30
-      const paddingTop = 80
+      const paddingLeft = 40 // 小歌手头像中间到左边的距离
+      const paddingBottom = 30 // 小歌手头像中间相对于底部的距离
+      const paddingTop = 80 // 大歌手头像相对于顶部的高度
       const width = window.innerWidth
       const height = window.innerHeight
-      const x = -(width / 2 - paddingLeft)
-      const y = height - (width / 2) - paddingBottom - paddingTop
-      const scale = paddingLeft / (width / 2)
+      const x = -(width / 2 - paddingLeft) // 大歌手头像相对于小歌手头像的x轴距离(中间点)
+      const y = height - (width / 2) - paddingBottom - paddingTop // 大歌手头像相对于小歌手的Y轴位置(中点)
+      const scale = paddingLeft / (width / 2) // 缩放的比例
       return {x, y, scale}
     },
     ...mapActions([
@@ -472,7 +484,11 @@ export default {
           font-size 25px
         .icon-playlist
           font-size 30px
-
+        .mini-circle
+          position absolute
+          left 0
+          top 0
+          font-size 32px
       &.mini-player-enter-active, &.mini-player-leave-active
         transition all .3s
       &.mini-player-enter, &.mini-player-leave-to
